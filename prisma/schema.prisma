@@ -1,7 +1,6 @@
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
-  relationMode = "prisma"
 }
 
 generator client {
@@ -43,6 +42,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  teams         Team[]
+  adminroles    League[]
 }
 
 model VerificationToken {
@@ -51,4 +52,28 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Wrestler {
+  id      String   @id @default(cuid())
+  name    String
+  company String
+  points  Int
+}
+
+model Team {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  name      String
+  points    Int
+  wrestlers String[]
+}
+
+model League {
+  id      String   @id @default(cuid())
+  name    String
+  adminId String
+  teams   String[]
+  user    User    @relation(fields: [adminId], references: [id], onDelete: Cascade)
 }
